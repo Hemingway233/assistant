@@ -16,7 +16,7 @@ import java.util.Map;
  * @ClassName: BaseAction
  * @Date: 2019/12/16 2:36
  * @Author: 王海明 (1378832252@qq.com)
- * @Description:
+ * @Description: BaseAction
  */
 public class BaseAction<T> extends ActionSupport implements ModelDriven<T>{
 
