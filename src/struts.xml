@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <constant name="struts.devMode" value="true"></constant>
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"></constant>
+
+    <package name="struts" namespace="/" extends="struts-default,json-default">
+
+        <!--    设置动态方式    -->
+        <global-allowed-methods>regex:.*</global-allowed-methods>
+        <!--    class里面写spring配置的action的bean标签的id值    -->
+        <action name="userAction_*" class="userAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+<!--            <result name="success">-->
+<!--                index.jsp-->
+<!--            </result>-->
+            <result  type="redirect" name="error">
+                login.jsp
+            </result>
+            <!--    默认转发        -->
+            <result name="logout">
+                login.jsp
+            </result>
+        </action>
+        <action name="studentAction_*" class="studentAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+            <result type="json" name="studPageList">
+                <param name="root">jsonData</param>
+            </result>
+            <!--    实验室技术员去到招聘计划信息页面        -->
+            <result name="toRecruitPage">
+                pages/student/stud_recruit_list.jsp
+            </result>
+        </action>
+        <action name="recruitAction_*" class="recruitAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+            <result type="json" name="findPageList">
+                <param name="root">jsonData</param>
+            </result>
+            <result type="json" name="pageList">
+                <param name="root">jsonData</param>
+            </result>
+            <!--    实验室技术员去到招聘计划信息页面        -->
+            <result name="toPage">
+                pages/technician/tech_recruit_list.jsp
+            </result>
+        </action>
+        <action name="entryFormAction_*" class="entryFormAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+            <result type="json" name="toEntryPage">
+                <param name="root">jsonData</param>
+            </result>
+            <result type="json" name="toRidEntryPage">
+                <param name="root">jsonData</param>
+            </result>
+            <result name="toStuIdEntryPage">
+                pages/technician/tech_entryForm_list.jsp
+            </result>
+        </action>
+        <action name="workAction_*" class="workAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+            <result type="json" name="jsonData">
+                <param name="root">jsonData</param>
+            </result>
+            <result name="toWorkPage">
+                pages/labAssistant/lab_work_list.jsp
+            </result>
+            <result name="toTechWorkPage">
+                pages/technician/tech_work_list.jsp
+            </result>
+        </action>
+        <action name="deviceAction_*" class="deviceAction" method="{1}">
+            <result type="json">
+                <param name="root">result</param>
+            </result>
+            <result type="json" name="jsonData">
+                <param name="root">jsonData</param>
+            </result>
+        </action>
+
+    </package>
+
+    <!--   引入其他struts配置文件     -->
+    <!--  <include file="xxx.xml"></include>  -->
+
+</struts>

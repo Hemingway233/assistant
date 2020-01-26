@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                http://www.springframework.org/schema/tx
+                http://www.springframework.org/schema/tx/spring-tx.xsd
+                http://www.springframework.org/schema/mvc
+                http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+  <!--  引入其他spring.xml配置文件  -->
+  <!--    <import resource="classpath:"></import>-->
+
+  <!-- 开启扫描注解 -->
+  <context:component-scan base-package="com.whm.assistant"/>
+
+  <!--  读取jdbc.properties文件  -->
+  <context:property-placeholder location="classpath:jdbc.properties"/>
+  <!--  设置c3p0连接池  -->
+  <!--  必须导入c3p0jar包和mchange-commons-java-0.2.11.jar包  -->
+  <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <!--   注入属性值     -->
+    <!--    连接数据库驱动    -->
+    <property name="driverClass" value="${jdbc.driverClass}"></property>
+    <!--    数据库地址    -->
+    <property name="jdbcUrl" value="${jdbc.url}"></property>
+    <!--     数据库用户名   -->
+    <property name="user" value="${jdbc.username}"></property>
+    <!--     数据库密码    -->
+    <property name="password" value="${jdbc.password}"></property>
+  </bean>
+
+  <!-- 第一步：配置事务管理器   -->
+  <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory"></property>
+  </bean>
+  <!--  第二步：开启事务扫描，采用注解方式      记得在service类上写上@Transactional事务注解-->
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+
+  <!--   配置事务增强   -->
+  <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+      <!-- 配置需要进行事务管理的方法，和事务传播行为 -->
+      <tx:method name="save*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="persist*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="update*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="modify*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="delete*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="remove*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+      <tx:method name="get*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="true"/>
+      <tx:method name="find*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="true"/>
+      <tx:method name="transfer*" isolation="REPEATABLE_READ" propagation="REQUIRED" read-only="false"/>
+    </tx:attributes>
+  </tx:advice>
+
+  <!--  创建hibernateTemplate对象  -->
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+    <!--    注入sessionFactory    -->
+    <property name="sessionFactory" ref="sessionFactory"></property>
+  </bean>
+
+  <!-- 配置sessionFactory对象的创建   -->
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <!--   指定数据库信息     -->
+    <property name="dataSource" ref="dataSource"></property>
+    <!--   配置Hibernate属性   -->
+    <property name="hibernateProperties">
+      <props>
+        <!--   是否格式化SQL语句   -->
+        <prop key="hibernate.format_sql">true</prop>
+        <!--   配置SQL语句日志格式化是否输出   -->
+        <prop key="hibernate.show_sql">true</prop>
+        <!--   是否自动创建表结构   -->
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <!--    配置数据库方言    -->
+        <prop key="hibernate.dialect">org.hibernate.dialect.MySQL57Dialect</prop>
+      </props>
+    </property>
+    <!-- 扫描并加载注解过的实体类 -->
+    <property name="packagesToScan" value="com.whm.assistant.entity"></property>
+
+    <!--   指定hibernate核心配置文件位置     -->
+    <!--<property name="configLocations" value="classpath:"></property>-->
+  </bean>
+
+</beans>
